@@ -210,18 +210,18 @@ function skorTabelasi(periyotSkoru, takimSkoru, ceyrekSayi) {
     let macSonucu = "";
     if (evSahibiSkorlar > konukTakimSkorlar) {
       macSonucu =
-        "Maç Sonucu: Ev Sahibi " +
+        " Maç Sonucu: Ev Sahibi " +
         evSahibiSkorlar +
         " - Konuk Takım " +
         konukTakimSkorlar +
         " Ev sahibi kazandı!";
     } else {
       macSonucu =
-        "Maç Sonucu: Ev Sahibi " +
+        " Maç Sonucu: Ev Sahibi " +
         evSahibiSkorlar +
         " - Konuk Takım " +
         konukTakimSkorlar +
-        "Konuk takım kazandı!";
+        " Konuk takım kazandı!";
     }
     ceyrekSonucu.push(uzatmaSkor, macSonucu);
   }
