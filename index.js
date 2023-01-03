@@ -34,11 +34,12 @@ console.log(
   Aşağıdaki skor1 ve skor2 kodlarını inceleyiniz ve aşağıdaki soruları altına not alarak cevaplayın
   
   1. skor1 ve skor2 arasındaki fark nedir?
-  skor1 kodunda skor değişkeni fonksiyon içinde tanımlanmış.Bu sebeple dışarıdan doğrudan skor değişkeni çağırılamıyor ve fonksiyon içindeki skor artışı globalde skor değişkenine etki etmiyor. 
-  skor2 kodunda global olarak tanımlanan skor değişkeni fonksiyon içerisinde artıyor görünse de globaldeki skor değişkeni de güncelleniyor. 
+  skor1 kodunda skor değişkeni fonksiyon scope içinde tanımlanmış.Bu sebeple dışarıdan doğrudan skor değişkeni çağırılamıyor ve fonksiyon içindeki skor artışı globalde skor değişkenine etki etmiyor. 
+  skor2 kodunda global olarak tanımlanan skor değişkeni fonksiyon scope içerisinde artıyor görünse de globaldeki skor değişkeni de güncelleniyor. 
   2. Hangisi bir closure kullanmaktadır? Nasıl tarif edebilirsin? (yarınki derste öğreneceksin :) )
-  
+  skor1 kodunda dışarıda skor1() her çalışıtırıldığında skor1 fonksiyon scope içerisinde skor değişkeni kaldığı yerden artmaya devam ettiği için closure kullanmaktadır.
   3. Hangi durumda skor1 tercih edilebilir? Hangi durumda skor2 daha mantıklıdır?
+  Globalde skor değişkeni farklı fonksiyonlar tarafından çağırılmayacaksa daha az bellek kullanmak adına skor1 kodunu yapmak daha mantıklıdır.
 */
 
 // skor1 kodları
@@ -69,7 +70,7 @@ Not: Bu fonskiyon, aşağıdaki diğer görevler için de bir callback fonksiyon
 */
 
 function takimSkoru() {
-  return Math.floor(Math.random() * 16) + 10;
+  return Math.floor(Math.random() * 16) + 10; //Math.random() => 0 <= x < 1 1den küçük 0dan büyük eşit değer verir
 }
 
 /* Görev 3: macSonucu() 
@@ -87,17 +88,18 @@ Aşağıdaki macSonucu() fonksiyonununda aşağıdakileri yapınız:
 }
 */
 
-function macSonucu(takimSkoru, ceyrekSayi) {
-  let evSahibi = "";
-  let konukTakim = "";
+function macSonucu(callback, ceyrekSayi) {
+  let evSahibi = 0;
+  let konukTakim = 0;
   for (let i = 0; i < ceyrekSayi; i++) {
-    evSahibi = takimSkoru();
-    konukTakim = takimSkoru();
+    evSahibi += callback();
+    konukTakim += callback();
   }
-  return {
+  let macSkoru = {
     EvSahibi: evSahibi,
     KonukTakim: konukTakim,
   };
+  return macSkoru;
 }
 
 /* Zorlayıcı Görev 4: periyotSkoru()
@@ -113,15 +115,16 @@ Aşağıdaki periyotSkoru() fonksiyonununda aşağıdakileri yapınız:
 }
   */
 
-function periyotSkoru(takimSkoru) {
-  let evSahibi = "";
-  let konukTakim = "";
-  evSahibi = takimSkoru();
-  konukTakim = takimSkoru();
-  return {
+function periyotSkoru(callback) {
+  let evSahibi = 0;
+  let konukTakim = 0;
+  evSahibi = callback();
+  konukTakim = callback();
+  let periyotSonucu = {
     EvSahibi: evSahibi,
     KonukTakim: konukTakim,
   };
+  return periyotSonucu;
 }
 
 /* Zorlayıcı Görev 5: skorTabelasi() 
@@ -155,13 +158,15 @@ MAÇ UZAR ise skorTabelasi(periyotSkoru,takimSkoru,4)
 ] */
 // NOTE: Bununla ilgili bir test yoktur. Eğer logladığınız sonuçlar yukarıdakine benziyor ise tmamlandı sayabilirsiniz.
 
-function skorTabelasi(periyotSkoru, takimSkoru, ceyrekSayi) {
+function skorTabelasi(callback2, callback, ceyrekSayi) {
   let ceyrekSonucu = [];
   let evSahibiSkorlar = 0;
   let konukTakimSkorlar = 0;
   for (let i = 0; i < ceyrekSayi; i++) {
-    let evSahibiSkor = periyotSkoru(takimSkoru).EvSahibi;
-    let konukTakimSkor = periyotSkoru(takimSkoru).KonukTakim;
+    let evSahibiSkor = callback2(callback).EvSahibi;
+    let konukTakimSkor = callback2(callback).KonukTakim;
+    evSahibiSkorlar += evSahibiSkor;
+    konukTakimSkorlar += konukTakimSkor;
     ceyrekSonucu.push(
       i +
         1 +
@@ -169,9 +174,7 @@ function skorTabelasi(periyotSkoru, takimSkoru, ceyrekSayi) {
         evSahibiSkor +
         " - Konuk Takım " +
         konukTakimSkor
-    );
-    evSahibiSkorlar += evSahibiSkor;
-    konukTakimSkorlar += konukTakimSkor;
+    ); // `${i} . Periyot:Ev Sahibi ${evSahibiSkor} - Konuk Takım  ${konukTakimSkor}`
   }
   if (
     evSahibiSkorlar !== konukTakimSkorlar &&
@@ -198,8 +201,8 @@ function skorTabelasi(periyotSkoru, takimSkoru, ceyrekSayi) {
     );
     return ceyrekSonucu;
   } else {
-    let uzatmaEvSahibiSkor = periyotSkoru(takimSkoru).EvSahibi;
-    let uzatmaKonukTakimSkor = periyotSkoru(takimSkoru).KonukTakim;
+    let uzatmaEvSahibiSkor = callback2(callback).EvSahibi;
+    let uzatmaKonukTakimSkor = callback2(callback).KonukTakim;
     evSahibiSkorlar = evSahibiSkorlar + uzatmaEvSahibiSkor;
     konukTakimSkorlar = konukTakimSkorlar + uzatmaKonukTakimSkor;
     let uzatmaSkor =
